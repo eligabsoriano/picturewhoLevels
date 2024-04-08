@@ -4,14 +4,20 @@ import javax.swing.border.CompoundBorder;
 import java.awt.*;
 import java.awt.event.*;
 
-
 public class easyLevels3 implements ActionListener {
-
     private JTextField answerField1, answerField2, answerField3, answerField4, answerField5;
     private int currentLevel = 1;
     private JLabel timerLabel;
     private Timer timer;
     private int secondsLeft = 30;
+
+    private JLabel hintImageLabel;
+    private int hintClickCount = 0;
+    private String[] hintMessages = {
+        "TAWAG DITO HAYOP",
+        "MADALI LANG TO TAWAG NGA HAYOP"
+    };
+    private int hintMessageIndex = 0;
 
     public easyLevels3() {
         openGameWindow();
@@ -21,7 +27,7 @@ public class easyLevels3 implements ActionListener {
         JFrame gameFrame = new JFrame("Picture Who");
         gameFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         gameFrame.setSize(1000, 600);
-       
+
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(new Color(94, 69, 128));
         gameFrame.getContentPane().add(mainPanel); // main
@@ -31,9 +37,9 @@ public class easyLevels3 implements ActionListener {
         mainPanel.setBorder(BorderFactory.createEmptyBorder(200, 200, 200, 200));
         mainPanel.add(imagePanel, BorderLayout.CENTER);
 
-        JPanel answerPanel = new JPanel(new GridLayout(1, 1,20,20));
+        JPanel answerPanel = new JPanel(new GridLayout(1, 1, 20, 20));
         answerPanel.setBackground(new Color(94, 69, 128));
-        answerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); 
+        answerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         mainPanel.add(answerPanel, BorderLayout.SOUTH);
 
         ImageIcon imageIcon1 = new ImageIcon("img/pe.jpg");
@@ -41,10 +47,10 @@ public class easyLevels3 implements ActionListener {
         ImageIcon imageIcon3 = new ImageIcon("img/peac.jpg");
         ImageIcon imageIcon4 = new ImageIcon("img/peace.jpg");
 
-        Image image1 = imageIcon1.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-        Image image2 = imageIcon2.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-        Image image3 = imageIcon3.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-        Image image4 = imageIcon4.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+        Image image1 = imageIcon1.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+        Image image2 = imageIcon2.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+        Image image3 = imageIcon3.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+        Image image4 = imageIcon4.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
 
         ImageIcon scaledImageIcon1 = new ImageIcon(image1);
         ImageIcon scaledImageIcon2 = new ImageIcon(image2);
@@ -82,13 +88,11 @@ public class easyLevels3 implements ActionListener {
         answerField4 = createSingleLetterTextField(gameFrame, answerField5);
         answerField5 = createSingleLetterTextField(gameFrame, null);
 
-
         answerPanel.add(answerField1);
         answerPanel.add(answerField2);
         answerPanel.add(answerField3);
         answerPanel.add(answerField4);
         answerPanel.add(answerField5);
-
 
         timerLabel = new JLabel("Time Left: " + secondsLeft);
         timerLabel.setHorizontalAlignment(SwingConstants.LEFT);
@@ -104,9 +108,14 @@ public class easyLevels3 implements ActionListener {
                     timerLabel.setText("Time Left: " + secondsLeft);
                 } else {
                     timer.stop();
-                    JOptionPane.showMessageDialog(gameFrame, "oras mo'y ubos na ");
-                    gameFrame.dispose();
-                    
+                    int choice = JOptionPane.showConfirmDialog(gameFrame, "Time's up! Do you want to restart the level?", "Restart Level", JOptionPane.YES_NO_OPTION);
+                    if (choice == JOptionPane.YES_OPTION) {
+                        restartLevel();
+                    } else {
+                        gameFrame.dispose();
+                        App game = new App();
+                        game.setVisible(true);
+                    }
                 }
             }
         });
@@ -115,6 +124,8 @@ public class easyLevels3 implements ActionListener {
         gameFrame.pack();
         gameFrame.setLocationRelativeTo(null);
         gameFrame.setVisible(true);
+
+        addHintPanel(gameFrame);
     }
 
     private JTextField createSingleLetterTextField(JFrame gameFrame, JTextField nextField) {
@@ -122,16 +133,15 @@ public class easyLevels3 implements ActionListener {
         textField.setHorizontalAlignment(JTextField.CENTER);
         textField.setFont(new Font("Arial", Font.BOLD, 30));
         textField.setForeground(new Color(94, 69, 128));
-        textField.setBackground(new Color(211, 211, 211)); 
-        
-        
-    Border lineBorder = BorderFactory.createLineBorder(new Color(94, 69, 128), 5, true);
-    Border shadowBorder = BorderFactory.createLineBorder(new Color(0, 0, 0, 50), 10);
-    Border compoundBorder = new CompoundBorder(lineBorder, shadowBorder);
-    textField.setBorder(compoundBorder); 
+        textField.setBackground(new Color(211, 211, 211));
 
-    Border border = BorderFactory.createLineBorder(new Color(0,0,0), 2, true);
-    textField.setBorder(border); 
+        Border lineBorder = BorderFactory.createLineBorder(new Color(94, 69, 128), 5, true);
+        Border shadowBorder = BorderFactory.createLineBorder(new Color(0, 0, 0, 50), 10);
+        Border compoundBorder = new CompoundBorder(lineBorder, shadowBorder);
+        textField.setBorder(compoundBorder);
+
+        Border border = BorderFactory.createLineBorder(new Color(0, 0, 0), 2, true);
+        textField.setBorder(border);
 
         textField.addKeyListener(new KeyAdapter() {
             @Override
@@ -162,7 +172,6 @@ public class easyLevels3 implements ActionListener {
         String enteredAnswer4 = answerField4.getText().trim().toLowerCase();
         String enteredAnswer5 = answerField5.getText().trim().toLowerCase();
 
-
         String correctAnswer1 = "p";
         String correctAnswer2 = "e";
         String correctAnswer3 = "a";
@@ -181,17 +190,20 @@ public class easyLevels3 implements ActionListener {
             JOptionPane.showMessageDialog(gameFrame, "Incorrect!");
         }
         answerField1.setText("");
-            answerField2.setText("");
-            answerField3.setText("");
-            answerField4.setText("");
-            answerField5.setText("");
-            answerField1.requestFocusInWindow();
+        answerField2.setText("");
+        answerField3.setText("");
+        answerField4.setText("");
+        answerField5.setText("");
+        answerField1.requestFocusInWindow();
     }
-       
 
     private void openNextLevel() {
         currentLevel++;
-        new easyLevels4(); 
+        new easyLevels4();
+    }
+
+    private void restartLevel() {
+        new easyLevels3();
     }
 
     @Override
@@ -202,9 +214,56 @@ public class easyLevels3 implements ActionListener {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                new easyLevels3(); 
+                new easyLevels3();
             }
         });
+    }
+
+    private void addHintPanel(JFrame gameFrame) {
+        ImageIcon hintIcon = new ImageIcon("img/thinking.png");
+        Image hintImage = hintIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+        ImageIcon scaledHintIcon = new ImageIcon(hintImage);
+        hintImageLabel = new JLabel(scaledHintIcon);
+        hintImageLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        hintImageLabel.setToolTipText("Click for hint");
+        hintImageLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (hintClickCount < hintMessages.length) {
+                    timer.stop();
+                    int choice = JOptionPane.showConfirmDialog(gameFrame, "Do you want to use a hint?", "Hint System", JOptionPane.YES_NO_OPTION);
+                    if (choice == JOptionPane.YES_OPTION) {
+                        String hintMessage;
+                        if (hintClickCount == 0) {
+                            hintMessage = "Need a hint? Use your wisdom wisely! You have 2 hint trials remaining. Each hint deducts 5 seconds from your remaining time. Choose and think wisely to uncover the hidden word!";
+                        } else {
+                            hintMessage = "Need a hint? Use your wisdom wisely! You have 1 hint trial remaining. Each hint deducts 5 seconds from your remaining time. Choose and think wisely to uncover the hidden word!";
+                        }
+                        JOptionPane.showMessageDialog(gameFrame, hintMessage);
+                        JOptionPane.showMessageDialog(gameFrame, hintMessages[hintMessageIndex]);
+                        hintMessageIndex = (hintMessageIndex + 1) % hintMessages.length;
+                        hintClickCount++;
+                        if (hintClickCount == hintMessages.length) {
+                            hintImageLabel.setEnabled(false);
+                            hintImageLabel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                        }
+                        if (secondsLeft >= 5) {
+                            secondsLeft -= 5;
+                            timerLabel.setText("Time Left: " + secondsLeft);
+                        } else {
+                            secondsLeft = 0;
+                            timerLabel.setText("Time Left: " + secondsLeft);
+                        }
+                    }
+                    timer.start();
+                }
+            }
+        });
+
+        JPanel hintPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        hintPanel.setBackground(new Color(94, 69, 128));
+        hintPanel.add(hintImageLabel);
+        gameFrame.getContentPane().add(hintPanel, BorderLayout.SOUTH);
     }
 }
 
@@ -216,8 +275,8 @@ class CustomGridLayout extends GridLayout {
         super(rows, cols);
         this.hgap = hgap;
         this.vgap = vgap;
-        setHgap(hgap); 
-        setVgap(vgap); 
+        setHgap(hgap);
+        setVgap(vgap);
     }
 
     @Override

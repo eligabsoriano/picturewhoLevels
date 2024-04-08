@@ -11,6 +11,14 @@ public class easyLevels2 implements ActionListener {
     private Timer timer;
     private int secondsLeft = 30;
 
+    private JLabel hintImageLabel; 
+    private int hintClickCount = 0; 
+    private String[] hintMessages = {
+        "TAWAG DITO HAYOP",
+        "MADALI LANG TO TAWAG NGA HAYOP" };
+    private int hintMessageIndex = 0;
+
+
     public easyLevels2() {
         openGameWindow();
     }
@@ -41,10 +49,10 @@ public class easyLevels2 implements ActionListener {
         ImageIcon imageIcon4 = new ImageIcon("img/mickeymouse.jpg");
 
         // Scale images to fit within the cells
-        Image image1 = imageIcon1.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-        Image image2 = imageIcon2.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-        Image image3 = imageIcon3.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-        Image image4 = imageIcon4.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+        Image image1 = imageIcon1.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH);
+        Image image2 = imageIcon2.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH);
+        Image image3 = imageIcon3.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH);
+        Image image4 = imageIcon4.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH);
 
         ImageIcon scaledImageIcon1 = new ImageIcon(image1);
         ImageIcon scaledImageIcon2 = new ImageIcon(image2);
@@ -80,7 +88,6 @@ public class easyLevels2 implements ActionListener {
         answerField5 = createSingleLetterTextField(gameFrame, null);
 
 
-        // Add text fields to the answer panel
         answerPanel.add(answerField1);
         answerPanel.add(answerField2);
         answerPanel.add(answerField3);
@@ -101,16 +108,24 @@ public class easyLevels2 implements ActionListener {
                     timerLabel.setText("Time Left: " + secondsLeft);
                 } else {
                     timer.stop();
-                    JOptionPane.showMessageDialog(gameFrame, "oras mo'y ubos na ");
-                    gameFrame.dispose();
-                    
+                    int choice = JOptionPane.showConfirmDialog(gameFrame, "Time's up! Do you want to restart the level?", "Restart Level", JOptionPane.YES_NO_OPTION);
+                    if (choice == JOptionPane.YES_OPTION) {
+                        restartLevel();
+                    } else {
+                        gameFrame.dispose();
+                        App game = new App();
+                        game.setVisible(true);
+                    }
                 }
             }
         });
         timer.start();
+
         gameFrame.pack();
         gameFrame.setLocationRelativeTo(null);
         gameFrame.setVisible(true);
+
+        addHintPanel(gameFrame);
     }
 
     private JTextField createSingleLetterTextField(JFrame gameFrame, JTextField nextField) {
@@ -122,13 +137,9 @@ public class easyLevels2 implements ActionListener {
         
         
     Border lineBorder = BorderFactory.createLineBorder(new Color(94, 69, 128), 5, true);
-
     Border shadowBorder = BorderFactory.createLineBorder(new Color(0, 0, 0, 50), 10);
-
     Border compoundBorder = new CompoundBorder(lineBorder, shadowBorder);
-
     textField.setBorder(compoundBorder); 
-
     Border border = BorderFactory.createLineBorder(new Color(0,0,0), 2, true);
     textField.setBorder(border); 
 
@@ -191,6 +202,10 @@ public class easyLevels2 implements ActionListener {
         new easyLevels3();
     }
 
+    private void restartLevel() {
+        new easyLevels2();
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         openGameWindow();
@@ -198,6 +213,52 @@ public class easyLevels2 implements ActionListener {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new easyLevels2());
+    }
+    private void addHintPanel(JFrame gameFrame) {
+        ImageIcon hintIcon = new ImageIcon("img/thinking.png");
+        Image hintImage = hintIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+        ImageIcon scaledHintIcon = new ImageIcon(hintImage);
+        hintImageLabel = new JLabel(scaledHintIcon);
+        hintImageLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        hintImageLabel.setToolTipText("Click for hint");
+        hintImageLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (hintClickCount < hintMessages.length) {
+                    timer.stop();
+                    int choice = JOptionPane.showConfirmDialog(gameFrame, "Do you want to use a hint?", "Hint System", JOptionPane.YES_NO_OPTION);
+                    if (choice == JOptionPane.YES_OPTION) {
+                        String hintMessage;
+                        if (hintClickCount == 0) {
+                            hintMessage = "Need a hint? Use your wisdom wisely! You have 2 hint trials remaining. Each hint deducts 5 seconds from your remaining time. Choose and think wisely to uncover the hidden word!";
+                        } else {
+                            hintMessage = "Need a hint? Use your wisdom wisely! You have 1 hint trial remaining. Each hint deducts 5 seconds from your remaining time. Choose and think wisely to uncover the hidden word!";
+                        }
+                        JOptionPane.showMessageDialog(gameFrame, hintMessage);
+                        JOptionPane.showMessageDialog(gameFrame, hintMessages[hintMessageIndex]);
+                        hintMessageIndex = (hintMessageIndex + 1) % hintMessages.length; 
+                        hintClickCount++;
+                        if (hintClickCount == hintMessages.length) {
+                            hintImageLabel.setEnabled(false);
+                            hintImageLabel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                        }
+                        if (secondsLeft >= 5) {
+                            secondsLeft -= 5;
+                            timerLabel.setText("Time Left: " + secondsLeft);
+                        } else {
+                            secondsLeft = 0;
+                            timerLabel.setText("Time Left: " + secondsLeft);
+                        }
+                    }
+                    timer.start();
+                }
+            }
+        });
+    
+        JPanel hintPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        hintPanel.setBackground(new Color(94, 69, 128));
+        hintPanel.add(hintImageLabel);
+        gameFrame.getContentPane().add(hintPanel, BorderLayout.SOUTH);
     }
 }
 

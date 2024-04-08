@@ -11,6 +11,14 @@ public class easyLevels4 implements ActionListener {
     private Timer timer;
     private int secondsLeft = 30;
 
+    private JLabel hintImageLabel;
+    private int hintClickCount = 0;
+    private String[] hintMessages = {
+        "TAWAG DITO HAYOP",
+        "MADALI LANG TO TAWAG NGA HAYOP"
+    };
+    private int hintMessageIndex = 0;
+
     public easyLevels4() {
         openGameWindow();
     }
@@ -18,16 +26,19 @@ public class easyLevels4 implements ActionListener {
     private void openGameWindow() {
         JFrame gameFrame = new JFrame("Picture Who");
         gameFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        gameFrame.setSize(1000, 600);
-       
+        gameFrame.setSize(1300, 800);
+    
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(new Color(94, 69, 128));
-        gameFrame.getContentPane().add(mainPanel); // main
-
-        JPanel imagePanel = new JPanel(new CustomGridLayout(2, 2, 20, 20));
+        gameFrame.getContentPane().add(mainPanel);
+    
+        // Increase the size of the image panel
+        JPanel imagePanel = new JPanel(new CustomGridLayout(2, 2, 40, 40));
+        imagePanel.setPreferredSize(new Dimension(600, 600)); // Set preferred size
         imagePanel.setBackground(new Color(94, 69, 128));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(200, 200, 200, 200));
-        mainPanel.add(imagePanel, BorderLayout.CENTER);
+        
+        
+         mainPanel.add(imagePanel, BorderLayout.CENTER);
 
         JPanel answerPanel = new JPanel(new GridLayout(1, 1,20,20));
         answerPanel.setBackground(new Color(94, 69, 128));
@@ -41,10 +52,10 @@ public class easyLevels4 implements ActionListener {
         ImageIcon imageIcon4 = new ImageIcon("img/icebea.jpg");
 
         // Scale images to fit within the cells
-        Image image1 = imageIcon1.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-        Image image2 = imageIcon2.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-        Image image3 = imageIcon3.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-        Image image4 = imageIcon4.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+        Image image1 = imageIcon1.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+        Image image2 = imageIcon2.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+        Image image3 = imageIcon3.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+        Image image4 = imageIcon4.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
 
         ImageIcon scaledImageIcon1 = new ImageIcon(image1);
         ImageIcon scaledImageIcon2 = new ImageIcon(image2);
@@ -100,9 +111,14 @@ public class easyLevels4 implements ActionListener {
                     timerLabel.setText("Time Left: " + secondsLeft);
                 } else {
                     timer.stop();
-                    JOptionPane.showMessageDialog(gameFrame, "oras mo'y ubos na ");
-                    gameFrame.dispose();
-                    
+                    int choice = JOptionPane.showConfirmDialog(gameFrame, "Time's up! Do you want to restart the level?", "Restart Level", JOptionPane.YES_NO_OPTION);
+                    if (choice == JOptionPane.YES_OPTION) {
+                        restartLevel();
+                    } else {
+                        gameFrame.dispose();
+                        App game = new App();
+                        game.setVisible(true);
+                    }
                 }
             }
         });
@@ -111,6 +127,8 @@ public class easyLevels4 implements ActionListener {
         gameFrame.pack();
         gameFrame.setLocationRelativeTo(null);
         gameFrame.setVisible(true);
+
+        addHintPanel(gameFrame);
     }
 
     private JTextField createSingleLetterTextField(JFrame gameFrame, JTextField nextField) {
@@ -180,6 +198,9 @@ public class easyLevels4 implements ActionListener {
         currentLevel++;
         new easyLevels5(); 
     }
+    private void restartLevel() {
+        new easyLevels4();
+    }
     @Override
     public void actionPerformed(ActionEvent e) {
         openGameWindow();
@@ -192,7 +213,54 @@ public class easyLevels4 implements ActionListener {
             }
         });
     }
+
+private void addHintPanel(JFrame gameFrame) {
+    ImageIcon hintIcon = new ImageIcon("img/thinking.png");
+    Image hintImage = hintIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+    ImageIcon scaledHintIcon = new ImageIcon(hintImage);
+    hintImageLabel = new JLabel(scaledHintIcon);
+    hintImageLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    hintImageLabel.setToolTipText("Click for hint");
+    hintImageLabel.addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if (hintClickCount < hintMessages.length) {
+                timer.stop();
+                int choice = JOptionPane.showConfirmDialog(gameFrame, "Do you want to use a hint?", "Hint System", JOptionPane.YES_NO_OPTION);
+                if (choice == JOptionPane.YES_OPTION) {
+                    String hintMessage;
+                    if (hintClickCount == 0) {
+                        hintMessage = "Need a hint? Use your wisdom wisely! You have 2 hint trials remaining. Each hint deducts 5 seconds from your remaining time. Choose and think wisely to uncover the hidden word!";
+                    } else {
+                        hintMessage = "Need a hint? Use your wisdom wisely! You have 1 hint trial remaining. Each hint deducts 5 seconds from your remaining time. Choose and think wisely to uncover the hidden word!";
+                    }
+                    JOptionPane.showMessageDialog(gameFrame, hintMessage);
+                    JOptionPane.showMessageDialog(gameFrame, hintMessages[hintMessageIndex]);
+                    hintMessageIndex = (hintMessageIndex + 1) % hintMessages.length;
+                    hintClickCount++;
+                    if (hintClickCount == hintMessages.length) {
+                        hintImageLabel.setEnabled(false);
+                        hintImageLabel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                    }
+                    if (secondsLeft >= 5) {
+                        secondsLeft -= 5;
+                        timerLabel.setText("Time Left: " + secondsLeft);
+                    } else {
+                        secondsLeft = 0;
+                        timerLabel.setText("Time Left: " + secondsLeft);
+                    }
+                }
+                timer.start();
+            }
+        }
+    });
+
+    JPanel hintPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+    hintPanel.setBackground(new Color(94, 69, 128));
+    hintPanel.add(hintImageLabel);
+    gameFrame.getContentPane().add(hintPanel, BorderLayout.SOUTH);
 }
+
 
 class CustomGridLayout extends GridLayout {
     private int hgap;
@@ -215,4 +283,5 @@ class CustomGridLayout extends GridLayout {
     public int getVgap() {
         return vgap;
     }
+}
 }

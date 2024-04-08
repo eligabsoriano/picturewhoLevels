@@ -11,6 +11,14 @@ public class hardlevel7 implements ActionListener {
     private Timer timer;
     private int secondsLeft = 60;
 
+    private JLabel hintImageLabel;
+    private int hintClickCount = 0;
+    private String[] hintMessages = {
+        "TAWAG DITO HAYOP",
+        "MADALI LANG TO TAWAG NGA HAYOP"
+    };
+    private int hintMessageIndex = 0;
+
     public hardlevel7() {
         openGameWindow();
     }
@@ -97,7 +105,6 @@ public class hardlevel7 implements ActionListener {
         answerPanel.add(answerField7);
         answerPanel.add(answerField8);
 
-
         timerLabel = new JLabel("Time Left: " + secondsLeft);
         timerLabel.setHorizontalAlignment(SwingConstants.LEFT);
         timerLabel.setFont(new Font("Arial", Font.BOLD, 16));
@@ -112,9 +119,14 @@ public class hardlevel7 implements ActionListener {
                     timerLabel.setText("Time Left: " + secondsLeft);
                 } else {
                     timer.stop();
-                    JOptionPane.showMessageDialog(gameFrame, "oras mo'y ubos na ");
-                    gameFrame.dispose();
-                    
+                    int choice = JOptionPane.showConfirmDialog(gameFrame, "Time's up! Do you want to restart the level?", "Restart Level", JOptionPane.YES_NO_OPTION);
+                    if (choice == JOptionPane.YES_OPTION) {
+                        restartLevel();
+                    } else {
+                        gameFrame.dispose();
+                        App game = new App();
+                        game.setVisible(true);
+                    }
                 }
             }
         });
@@ -123,6 +135,8 @@ public class hardlevel7 implements ActionListener {
         gameFrame.pack();
         gameFrame.setLocationRelativeTo(null);
         gameFrame.setVisible(true);
+
+        addHintPanel(gameFrame);
     }
     private JTextField createSingleLetterTextField(JFrame gameFrame, JTextField nextField) {
         JTextField textField = new JTextField(1);
@@ -212,6 +226,10 @@ public class hardlevel7 implements ActionListener {
         new hardlevel8(); 
     }
 
+    private void restartLevel() {
+        new hardlevel7();
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         openGameWindow();
@@ -224,7 +242,51 @@ public class hardlevel7 implements ActionListener {
             }
         });
     }
-}
+    private void addHintPanel(JFrame gameFrame) {
+        ImageIcon hintIcon = new ImageIcon("img/thinking.png");
+        Image hintImage = hintIcon.getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH);
+        ImageIcon scaledHintIcon = new ImageIcon(hintImage);
+        hintImageLabel = new JLabel(scaledHintIcon);
+        hintImageLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        hintImageLabel.setToolTipText("Click for hint");
+        hintImageLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (hintClickCount < hintMessages.length) {
+                    timer.stop();
+                    int choice = JOptionPane.showConfirmDialog(gameFrame, "Do you want to use a hint?", "Hint System", JOptionPane.YES_NO_OPTION);
+                    if (choice == JOptionPane.YES_OPTION) {
+                        String hintMessage;
+                        if (hintClickCount == 0) {
+                            hintMessage = "Need a hint? Use your wisdom wisely! You have 2 hint trials remaining. Each hint deducts 5 seconds from your remaining time. Choose and think wisely to uncover the hidden word!";
+                        } else {
+                            hintMessage = "Need a hint? Use your wisdom wisely! You have 1 hint trial remaining. Each hint deducts 5 seconds from your remaining time. Choose and think wisely to uncover the hidden word!";
+                        }
+                        JOptionPane.showMessageDialog(gameFrame, hintMessage);
+                        JOptionPane.showMessageDialog(gameFrame, hintMessages[hintMessageIndex]);
+                        hintMessageIndex = (hintMessageIndex + 1) % hintMessages.length;
+                        hintClickCount++;
+                        if (hintClickCount == hintMessages.length) {
+                            hintImageLabel.setEnabled(false);
+                            hintImageLabel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                        }
+                        if (secondsLeft >= 5) {
+                            secondsLeft -= 5;
+                            timerLabel.setText("Time Left: " + secondsLeft);
+                        } else {
+                            secondsLeft = 0;
+                            timerLabel.setText("Time Left: " + secondsLeft);
+                        }
+                    }
+                    timer.start();
+                }
+            }
+        });
+    
+        JPanel hintPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        hintPanel.setBackground(new Color(94, 69, 128));
+        hintPanel.add(hintImageLabel);
+        gameFrame.getContentPane().add(hintPanel, BorderLayout.SOUTH);}}
 
 class CustomGridLayout extends GridLayout {
     private int hgap;
