@@ -1,11 +1,17 @@
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
 import java.awt.*;
 import java.awt.event.*;
 
+
 public class easyLevels3 implements ActionListener {
-    private JButton submitButton;
-    @SuppressWarnings("unused")
+
+    private JTextField answerField1, answerField2, answerField3, answerField4, answerField5;
     private int currentLevel = 1;
+    private JLabel timerLabel;
+    private Timer timer;
+    private int secondsLeft = 30;
 
     public easyLevels3() {
         openGameWindow();
@@ -15,20 +21,26 @@ public class easyLevels3 implements ActionListener {
         JFrame gameFrame = new JFrame("Picture Who");
         gameFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         gameFrame.setSize(1000, 600);
-
+       
         JPanel mainPanel = new JPanel(new BorderLayout());
-        gameFrame.getContentPane().add(mainPanel);
+        mainPanel.setBackground(new Color(94, 69, 128));
+        gameFrame.getContentPane().add(mainPanel); // main
 
-        JPanel imagePanel = new JPanel(new GridLayout(2, 2));
+        JPanel imagePanel = new JPanel(new CustomGridLayout(2, 2, 20, 20));
+        imagePanel.setBackground(new Color(94, 69, 128));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(200, 200, 200, 200));
         mainPanel.add(imagePanel, BorderLayout.CENTER);
 
-        // Load different images into ImageIcons
+        JPanel answerPanel = new JPanel(new GridLayout(1, 1,20,20));
+        answerPanel.setBackground(new Color(94, 69, 128));
+        answerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); 
+        mainPanel.add(answerPanel, BorderLayout.SOUTH);
+
         ImageIcon imageIcon1 = new ImageIcon("img/pe.jpg");
         ImageIcon imageIcon2 = new ImageIcon("img/pea.jpg");
         ImageIcon imageIcon3 = new ImageIcon("img/peac.jpg");
         ImageIcon imageIcon4 = new ImageIcon("img/peace.jpg");
 
-        // Scale images to fit within the cells
         Image image1 = imageIcon1.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
         Image image2 = imageIcon2.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
         Image image3 = imageIcon3.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
@@ -39,7 +51,6 @@ public class easyLevels3 implements ActionListener {
         ImageIcon scaledImageIcon3 = new ImageIcon(image3);
         ImageIcon scaledImageIcon4 = new ImageIcon(image4);
 
-        // Create JLabels and set the scaled icons
         JLabel imageLabel1 = new JLabel(scaledImageIcon1);
         JLabel imageLabel2 = new JLabel(scaledImageIcon2);
         JLabel imageLabel3 = new JLabel(scaledImageIcon3);
@@ -50,64 +61,133 @@ public class easyLevels3 implements ActionListener {
         imagePanel.add(imageLabel3);
         imagePanel.add(imageLabel4);
 
-        JPanel answerPanel = new JPanel(new BorderLayout());
-        mainPanel.add(answerPanel, BorderLayout.SOUTH);
+        int borderColorRed = 64;
+        int borderColorGreen = 64;
+        int borderColorBlue = 64;
 
-        JTextField answerField = new JTextField();
-        answerField.setPreferredSize(new Dimension(300, 50));
-        answerPanel.add(answerField, BorderLayout.CENTER);
-        answerField.addActionListener(new ActionListener() {
+        imageLabel1.setBorder(BorderFactory.createLineBorder(new Color(borderColorRed, borderColorGreen, borderColorBlue), 4));
+        imageLabel2.setBorder(BorderFactory.createLineBorder(new Color(borderColorRed, borderColorGreen, borderColorBlue), 4));
+        imageLabel3.setBorder(BorderFactory.createLineBorder(new Color(borderColorRed, borderColorGreen, borderColorBlue), 4));
+        imageLabel4.setBorder(BorderFactory.createLineBorder(new Color(borderColorRed, borderColorGreen, borderColorBlue), 4));
+
+        answerField1 = new JTextField();
+        answerField2 = new JTextField();
+        answerField3 = new JTextField();
+        answerField4 = new JTextField();
+        answerField5 = new JTextField();
+
+        answerField1 = createSingleLetterTextField(gameFrame, answerField2);
+        answerField2 = createSingleLetterTextField(gameFrame, answerField3);
+        answerField3 = createSingleLetterTextField(gameFrame, answerField4);
+        answerField4 = createSingleLetterTextField(gameFrame, answerField5);
+        answerField5 = createSingleLetterTextField(gameFrame, null);
+
+
+        answerPanel.add(answerField1);
+        answerPanel.add(answerField2);
+        answerPanel.add(answerField3);
+        answerPanel.add(answerField4);
+        answerPanel.add(answerField5);
+
+
+        timerLabel = new JLabel("Time Left: " + secondsLeft);
+        timerLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        timerLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        timerLabel.setForeground(Color.WHITE);
+        mainPanel.add(timerLabel, BorderLayout.NORTH);
+
+        timer = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (submitButton != null) {
-                    submitButton.doClick();
-                }
-            }
-        });
-
-        // Initialize the class-level submitButton instead of declaring a new one
-        submitButton = new JButton("Submit");
-        submitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String enteredAnswer = answerField.getText().trim().toLowerCase();
-                String correctAnswer = "peace"; 
-        
-                if (enteredAnswer.equals(correctAnswer)) {
-                    // Create a panel to hold the message and image
-                    JPanel messagePanel = new JPanel();
-                    messagePanel.setLayout(new BorderLayout());
-        
-                    // Load the image
-                    ImageIcon icon = new ImageIcon("img/6f54a865e73f38212e1a75c99317ef2e.jpg");
-                    Image image5 = icon.getImage().getScaledInstance(500, 500, Image.SCALE_SMOOTH);
-                    ImageIcon scaledImageIcon5 = new ImageIcon(image5);
-                    JLabel imageLabel5 = new JLabel(scaledImageIcon5);
-                    imagePanel.add(imageLabel5);
-        
-                    // Add the image to the panel
-                    messagePanel.add(imageLabel5, BorderLayout.CENTER);
-        
-                    // Show the message dialog with the custom panel
-                    JOptionPane.showMessageDialog(gameFrame, "wew talino talaga");
-        
-                    // Close the game frame and open the next level
-                    gameFrame.dispose();
-                    openNextLevel();
+                secondsLeft--;
+                if (secondsLeft >= 0) {
+                    timerLabel.setText("Time Left: " + secondsLeft);
                 } else {
-                    JOptionPane.showMessageDialog(gameFrame, "OPS ULET BATA");
+                    timer.stop();
+                    JOptionPane.showMessageDialog(gameFrame, "oras mo'y ubos na ");
+                    gameFrame.dispose();
+                    
                 }
-        
-                answerField.setText("");
             }
         });
-
-        answerPanel.add(submitButton, BorderLayout.EAST);
+        timer.start();
 
         gameFrame.pack();
         gameFrame.setLocationRelativeTo(null);
         gameFrame.setVisible(true);
     }
+
+    private JTextField createSingleLetterTextField(JFrame gameFrame, JTextField nextField) {
+        JTextField textField = new JTextField(1);
+        textField.setHorizontalAlignment(JTextField.CENTER);
+        textField.setFont(new Font("Arial", Font.BOLD, 30));
+        textField.setForeground(new Color(94, 69, 128));
+        textField.setBackground(new Color(211, 211, 211)); 
+        
+        
+    Border lineBorder = BorderFactory.createLineBorder(new Color(94, 69, 128), 5, true);
+    Border shadowBorder = BorderFactory.createLineBorder(new Color(0, 0, 0, 50), 10);
+    Border compoundBorder = new CompoundBorder(lineBorder, shadowBorder);
+    textField.setBorder(compoundBorder); 
+
+    Border border = BorderFactory.createLineBorder(new Color(0,0,0), 2, true);
+    textField.setBorder(border); 
+
+        textField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                char inputChar = e.getKeyChar();
+                if (Character.isLetter(inputChar) && textField.getText().length() == 0) {
+                    if (nextField != null) {
+                        nextField.requestFocusInWindow();
+                    }
+                }
+            }
+        });
+
+        textField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                checkAnswers(gameFrame);
+            }
+        });
+
+        return textField;
+    }
+
+    private void checkAnswers(JFrame gameFrame) {
+        String enteredAnswer1 = answerField1.getText().trim().toLowerCase();
+        String enteredAnswer2 = answerField2.getText().trim().toLowerCase();
+        String enteredAnswer3 = answerField3.getText().trim().toLowerCase();
+        String enteredAnswer4 = answerField4.getText().trim().toLowerCase();
+        String enteredAnswer5 = answerField5.getText().trim().toLowerCase();
+
+
+        String correctAnswer1 = "p";
+        String correctAnswer2 = "e";
+        String correctAnswer3 = "a";
+        String correctAnswer4 = "c";
+        String correctAnswer5 = "e";
+
+        if (enteredAnswer1.equals(correctAnswer1) &&
+                enteredAnswer2.equals(correctAnswer2) &&
+                enteredAnswer3.equals(correctAnswer3) &&
+                enteredAnswer4.equals(correctAnswer4) &&
+                enteredAnswer5.equals(correctAnswer5)) {
+            JOptionPane.showMessageDialog(gameFrame, "Brilliant!");
+            gameFrame.dispose();
+            openNextLevel();
+        } else {
+            JOptionPane.showMessageDialog(gameFrame, "Incorrect!");
+        }
+        answerField1.setText("");
+            answerField2.setText("");
+            answerField3.setText("");
+            answerField4.setText("");
+            answerField5.setText("");
+            answerField1.requestFocusInWindow();
+    }
+       
 
     private void openNextLevel() {
         currentLevel++;
@@ -125,5 +205,28 @@ public class easyLevels3 implements ActionListener {
                 new easyLevels3(); 
             }
         });
+    }
+}
+
+class CustomGridLayout extends GridLayout {
+    private int hgap;
+    private int vgap;
+
+    public CustomGridLayout(int rows, int cols, int hgap, int vgap) {
+        super(rows, cols);
+        this.hgap = hgap;
+        this.vgap = vgap;
+        setHgap(hgap); 
+        setVgap(vgap); 
+    }
+
+    @Override
+    public int getHgap() {
+        return hgap;
+    }
+
+    @Override
+    public int getVgap() {
+        return vgap;
     }
 }

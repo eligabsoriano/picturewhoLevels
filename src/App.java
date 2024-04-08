@@ -18,7 +18,7 @@ public class App extends JFrame {
 
         JPanel topPanel = new JPanel(new BorderLayout());
 
-        // title of the window app
+        //title
         JLabel pictureWhoLabel = new JLabel("PICTURE WHO?");
         pictureWhoLabel.setHorizontalAlignment(JLabel.CENTER);
         pictureWhoLabel.setFont(loadFont("src/PaytoneOne-Regular.ttf", Font.BOLD, 33));
@@ -87,7 +87,6 @@ public class App extends JFrame {
         setLocationRelativeTo(null);
     }
 
-    // to open difficulty selection window
     private void openDifficultyWindow() {
         JFrame difficultyFrame = new JFrame("Select Difficulty");
         difficultyFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

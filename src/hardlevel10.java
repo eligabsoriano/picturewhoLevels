@@ -1,26 +1,39 @@
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
 import java.awt.*;
 import java.awt.event.*;
 
 public class hardlevel10 implements ActionListener {
-    private JButton submitButton;
-    @SuppressWarnings("unused")
+    private JFrame gameFrame; 
+    private JTextField answerField1, answerField2, answerField3, answerField4, answerField5, answerField6, answerField7, answerField8;
     private int currentLevel = 1;
+    private JLabel timerLabel;
+    private Timer timer;
+    private int secondsLeft = 60;
 
     public hardlevel10() {
         openGameWindow();
     }
 
     private void openGameWindow() {
-        JFrame gameFrame = new JFrame("Picture Who");
+        gameFrame = new JFrame("Picture Who"); 
         gameFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         gameFrame.setSize(1000, 600);
-
+       
         JPanel mainPanel = new JPanel(new BorderLayout());
-        gameFrame.getContentPane().add(mainPanel);
+        mainPanel.setBackground(new Color(94, 69, 128));
+        gameFrame.getContentPane().add(mainPanel); // main
 
-        JPanel imagePanel = new JPanel(new GridLayout(2, 2));
+        JPanel imagePanel = new JPanel(new CustomGridLayout(2, 2, 20, 20));
+        imagePanel.setBackground(new Color(94, 69, 128));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(200, 200, 200, 200));
         mainPanel.add(imagePanel, BorderLayout.CENTER);
+
+        JPanel answerPanel = new JPanel(new GridLayout(1, 1,20,20));
+        answerPanel.setBackground(new Color(94, 69, 128));
+        answerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); 
+        mainPanel.add(answerPanel, BorderLayout.SOUTH);
 
         ImageIcon imageIcon1 = new ImageIcon("img/cardinal.jpg");
         ImageIcon imageIcon2 = new ImageIcon("img/Getty_cardinal_numbers-472294281-56aaf5833df78cf772b4b2d6.jpg");
@@ -47,47 +60,158 @@ public class hardlevel10 implements ActionListener {
         imagePanel.add(imageLabel3);
         imagePanel.add(imageLabel4);
 
-        JPanel answerPanel = new JPanel(new BorderLayout());
-        mainPanel.add(answerPanel, BorderLayout.SOUTH);
+        int borderColorRed = 64;
+        int borderColorGreen = 64;
+        int borderColorBlue = 64;
 
-        JTextField answerField = new JTextField();
-        answerField.setPreferredSize(new Dimension(300, 50));
-        answerPanel.add(answerField, BorderLayout.CENTER);
-        answerField.addActionListener(new ActionListener() {
+        imageLabel1.setBorder(BorderFactory.createLineBorder(new Color(borderColorRed, borderColorGreen, borderColorBlue), 4));
+        imageLabel2.setBorder(BorderFactory.createLineBorder(new Color(borderColorRed, borderColorGreen, borderColorBlue), 4));
+        imageLabel3.setBorder(BorderFactory.createLineBorder(new Color(borderColorRed, borderColorGreen, borderColorBlue), 4));
+        imageLabel4.setBorder(BorderFactory.createLineBorder(new Color(borderColorRed, borderColorGreen, borderColorBlue), 4));
+
+        answerField1 = new JTextField();
+        answerField2 = new JTextField();
+        answerField3 = new JTextField();
+        answerField4 = new JTextField();
+        answerField5 = new JTextField();
+        answerField6 = new JTextField();
+        answerField7 = new JTextField();
+        answerField8 = new JTextField();
+
+
+        answerField1 = createSingleLetterTextField(gameFrame, answerField2);
+        answerField2 = createSingleLetterTextField(gameFrame, answerField3);
+        answerField3 = createSingleLetterTextField(gameFrame, answerField4);
+        answerField4 = createSingleLetterTextField(gameFrame, answerField5);
+        answerField5 = createSingleLetterTextField(gameFrame, answerField6);
+        answerField6 = createSingleLetterTextField(gameFrame, answerField7);
+        answerField7 = createSingleLetterTextField(gameFrame, answerField8);
+        answerField8 = createSingleLetterTextField(gameFrame, null);
+
+
+        answerPanel.add(answerField1);
+        answerPanel.add(answerField2);
+        answerPanel.add(answerField3);
+        answerPanel.add(answerField4);
+        answerPanel.add(answerField5);
+        answerPanel.add(answerField6);
+        answerPanel.add(answerField7);
+        answerPanel.add(answerField8);
+
+
+        timerLabel = new JLabel("Time Left: " + secondsLeft);
+        timerLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        timerLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        timerLabel.setForeground(Color.WHITE);
+        mainPanel.add(timerLabel, BorderLayout.NORTH);
+
+        timer = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (submitButton != null) {
-                    submitButton.doClick();
-                }
-            }
-        });
-
-       
-        submitButton = new JButton("Submit");
-        submitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String enteredAnswer = answerField.getText().trim().toLowerCase();
-                String correctAnswer = "cardinal"; 
-
-                if (enteredAnswer.equals(correctAnswer)) {
-                    JOptionPane.showMessageDialog(gameFrame, "Congratulations! You've completed the Hard Level!");
-                    gameFrame.dispose();
-                    openNextLevel();
+                secondsLeft--;
+                if (secondsLeft >= 0) {
+                    timerLabel.setText("Time Left: " + secondsLeft);
                 } else {
-                    JOptionPane.showMessageDialog(gameFrame, "Try again");
+                    timer.stop();
+                    JOptionPane.showMessageDialog(gameFrame, "oras mo'y ubos na ");
+                    gameFrame.dispose();
+                    
                 }
-
-                answerField.setText("");
             }
         });
-
-        answerPanel.add(submitButton, BorderLayout.EAST);
+        timer.start();
 
         gameFrame.pack();
         gameFrame.setLocationRelativeTo(null);
         gameFrame.setVisible(true);
     }
+    private JTextField createSingleLetterTextField(JFrame gameFrame, JTextField nextField) {
+        JTextField textField = new JTextField(1);
+        textField.setHorizontalAlignment(JTextField.CENTER);
+        textField.setFont(new Font("Arial", Font.BOLD, 30));
+        textField.setForeground(new Color(94, 69, 128));
+        textField.setBackground(new Color(211, 211, 211)); 
+        
+        
+    Border lineBorder = BorderFactory.createLineBorder(new Color(94, 69, 128), 5, true);
+    Border shadowBorder = BorderFactory.createLineBorder(new Color(0, 0, 0, 50), 10);
+    Border compoundBorder = new CompoundBorder(lineBorder, shadowBorder);
+    textField.setBorder(compoundBorder); 
+
+    Border border = BorderFactory.createLineBorder(new Color(0,0,0), 2, true);
+    textField.setBorder(border); 
+
+        textField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                char inputChar = e.getKeyChar();
+                if (Character.isLetter(inputChar) && textField.getText().length() == 0) {
+                    if (nextField != null) {
+                        nextField.requestFocusInWindow();
+                    }
+                }
+            }
+        });
+
+        textField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                checkAnswers(gameFrame);
+            }
+        });
+
+        return textField;
+    }
+
+    private void checkAnswers(JFrame gameFrame) {
+        String enteredAnswer1 = answerField1.getText().trim().toLowerCase();
+        String enteredAnswer2 = answerField2.getText().trim().toLowerCase();
+        String enteredAnswer3 = answerField3.getText().trim().toLowerCase();
+        String enteredAnswer4 = answerField4.getText().trim().toLowerCase();
+        String enteredAnswer5 = answerField5.getText().trim().toLowerCase();
+        String enteredAnswer6 = answerField6.getText().trim().toLowerCase();
+        String enteredAnswer7 = answerField7.getText().trim().toLowerCase();
+        String enteredAnswer8 = answerField8.getText().trim().toLowerCase();
+
+        String correctAnswer1 = "c";
+        String correctAnswer2 = "a";
+        String correctAnswer3 = "r";
+        String correctAnswer4 = "d";
+        String correctAnswer5 = "i";
+        String correctAnswer6 = "n";
+        String correctAnswer7 = "a";
+        String correctAnswer8 = "l";
+
+        if (enteredAnswer1.equals(correctAnswer1) &&
+                enteredAnswer2.equals(correctAnswer2) &&
+                enteredAnswer3.equals(correctAnswer3) &&
+                enteredAnswer4.equals(correctAnswer4)&&
+                enteredAnswer5.equals(correctAnswer5)&&
+                enteredAnswer6.equals(correctAnswer6)&&
+                enteredAnswer7.equals(correctAnswer7)&&
+                enteredAnswer8.equals(correctAnswer8)) {
+            JOptionPane.showMessageDialog(gameFrame, "Brilliant!");
+            int choice = JOptionPane.showConfirmDialog(gameFrame, "You've conquered all levels! You're a Picture Who master! ", "Congrats", JOptionPane.CLOSED_OPTION);
+            if (choice == JOptionPane.CLOSED_OPTION)
+           { gameFrame.dispose();
+            openNextLevel();
+                 } else {
+                disposeCurrentAndOpenMainMenu();
+            }
+        } else {
+            JOptionPane.showMessageDialog(gameFrame, "Incorrect!");
+        }
+    }
+    private void disposeCurrentAndOpenMainMenu() {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                gameFrame.dispose();
+                App mainMenu = new App();
+                mainMenu.setVisible(true);
+            }
+        });
+    }
+
     private void openNextLevel() {
         currentLevel++;
         App game = new App();
