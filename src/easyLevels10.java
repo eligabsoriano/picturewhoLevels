@@ -147,17 +147,17 @@ public class easyLevels10 implements ActionListener {
     Border border = BorderFactory.createLineBorder(new Color(0,0,0), 2, true);
     textField.setBorder(border); 
 
-        textField.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                char inputChar = e.getKeyChar();
-                if (Character.isLetter(inputChar) && textField.getText().length() == 0) {
-                    if (nextField != null) {
-                        nextField.requestFocusInWindow();
-                    }
-                }
+    textField.addKeyListener(new KeyAdapter() {
+        @Override
+        public void keyTyped(KeyEvent e) {
+            char inputChar = e.getKeyChar();
+            if (Character.isLetter(inputChar)) {
+                textField.setText(String.valueOf(inputChar)); 
+                e.consume(); 
+                moveFocusToNextField(textField); 
             }
-        });
+        }
+    });
 
         textField.addActionListener(new ActionListener() {
             @Override
@@ -168,6 +168,16 @@ public class easyLevels10 implements ActionListener {
 
         return textField;
     }
+    private void moveFocusToNextField(JTextField currentField) {
+        if (currentField == answerField1) {
+            answerField2.requestFocusInWindow();
+        } else if (currentField == answerField2) {
+            answerField3.requestFocusInWindow();
+        } else if (currentField == answerField3) {
+            answerField4.requestFocusInWindow();
+        }
+    }
+
     private void checkAnswers(JFrame gameFrame) {
         String enteredAnswer1 = answerField1.getText().trim().toLowerCase();
         String enteredAnswer2 = answerField2.getText().trim().toLowerCase();
@@ -185,10 +195,10 @@ public class easyLevels10 implements ActionListener {
                 enteredAnswer4.equals(correctAnswer4)) {
             JOptionPane.showMessageDialog(gameFrame, "Brilliant!");
             int choice = JOptionPane.showConfirmDialog(gameFrame, "Congratulations! You've completed the Easy mode. Ready for the next challenge?", "Moderate Level", JOptionPane.YES_NO_OPTION);
-            if (choice == JOptionPane.YES_OPTION)
-        
-           { gameFrame.dispose();
-            openNextLevel();
+            if (choice == JOptionPane.YES_OPTION) { 
+                timer.stop();
+                gameFrame.dispose();
+                openNextLevel();
                  } else {
                 disposeCurrentAndOpenMainMenu();
             }
