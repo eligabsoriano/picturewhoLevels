@@ -26,7 +26,7 @@ public class easyLevels4 implements ActionListener {
     private void openGameWindow() {
         JFrame gameFrame = new JFrame("Picture Who");
         gameFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        gameFrame.setSize(1300, 800);
+        gameFrame.setSize(1000, 600);
     
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(new Color(94, 69, 128));
@@ -34,11 +34,9 @@ public class easyLevels4 implements ActionListener {
     
         // Increase the size of the image panel
         JPanel imagePanel = new JPanel(new CustomGridLayout(2, 2, 40, 40));
-        imagePanel.setPreferredSize(new Dimension(600, 600)); // Set preferred size
+        imagePanel.setPreferredSize(new Dimension(600, 600)); // Set preferred size 
         imagePanel.setBackground(new Color(94, 69, 128));
-        
-        
-         mainPanel.add(imagePanel, BorderLayout.CENTER);
+        mainPanel.add(imagePanel, BorderLayout.CENTER);
 
         JPanel answerPanel = new JPanel(new GridLayout(1, 1,20,20));
         answerPanel.setBackground(new Color(94, 69, 128));
@@ -147,17 +145,19 @@ public class easyLevels4 implements ActionListener {
     Border border = BorderFactory.createLineBorder(new Color(0,0,0), 2, true);
     textField.setBorder(border); 
 
-        textField.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                char inputChar = e.getKeyChar();
-                if (Character.isLetter(inputChar) && textField.getText().length() == 0) {
-                    if (nextField != null) {
-                        nextField.requestFocusInWindow();
-                    }
-                }
+    textField.addKeyListener(new KeyAdapter() {
+        @Override
+        public void keyTyped(KeyEvent e) {
+            char inputChar = e.getKeyChar();
+            if (Character.isLetter(inputChar)) {
+                textField.setText(String.valueOf(inputChar)); 
+                e.consume(); 
+                moveFocusToNextField(textField); 
             }
-        });
+        }
+    });
+
+
 
         textField.addActionListener(new ActionListener() {
             @Override
@@ -167,6 +167,14 @@ public class easyLevels4 implements ActionListener {
         });
 
         return textField;
+    }
+
+    private void moveFocusToNextField(JTextField currentField) {
+        if (currentField == answerField1) {
+            answerField2.requestFocusInWindow();
+        } else if (currentField == answerField2) {
+            answerField3.requestFocusInWindow();
+        } 
     }
 
     private void checkAnswers(JFrame gameFrame) {
@@ -183,6 +191,7 @@ public class easyLevels4 implements ActionListener {
                 enteredAnswer2.equals(correctAnswer2) &&
                 enteredAnswer3.equals(correctAnswer3)) {
             JOptionPane.showMessageDialog(gameFrame, "Brilliant!");
+            timer.stop();
             gameFrame.dispose();
             openNextLevel();
         } else {
