@@ -136,19 +136,18 @@ public class hardlevel1 implements ActionListener {
 
         addHintPanel(gameFrame);
     }
-    private JTextField createSingleLetterTextField(JFrame gameFrame, JTextField nextField) {
+        private JTextField createSingleLetterTextField(JFrame gameFrame, JTextField nextField) {
         JTextField textField = new JTextField(1);
         textField.setHorizontalAlignment(JTextField.CENTER);
         textField.setFont(new Font("Arial", Font.BOLD, 30));
         textField.setForeground(new Color(94, 69, 128));
         textField.setBackground(new Color(211, 211, 211)); 
-        
-        
+
+
     Border lineBorder = BorderFactory.createLineBorder(new Color(94, 69, 128), 5, true);
     Border shadowBorder = BorderFactory.createLineBorder(new Color(0, 0, 0, 50), 10);
     Border compoundBorder = new CompoundBorder(lineBorder, shadowBorder);
     textField.setBorder(compoundBorder); 
-
     Border border = BorderFactory.createLineBorder(new Color(0,0,0), 2, true);
     textField.setBorder(border); 
 
@@ -163,7 +162,7 @@ public class hardlevel1 implements ActionListener {
             }
         }
     });
-        
+
         textField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -172,7 +171,7 @@ public class hardlevel1 implements ActionListener {
         });
 
         return textField;
-}
+    }
 
             private void moveFocusToNextField(JTextField currentField) {
         if (currentField == answerField1) {
