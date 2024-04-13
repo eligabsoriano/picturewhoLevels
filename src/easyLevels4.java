@@ -27,15 +27,14 @@ public class easyLevels4 implements ActionListener {
         JFrame gameFrame = new JFrame("Picture Who");
         gameFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         gameFrame.setSize(1000, 600);
-    
+       
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(new Color(94, 69, 128));
-        gameFrame.getContentPane().add(mainPanel);
-    
-        // Increase the size of the image panel
-        JPanel imagePanel = new JPanel(new CustomGridLayout(2, 2, 40, 40));
-        imagePanel.setPreferredSize(new Dimension(600, 600)); // Set preferred size 
+        gameFrame.getContentPane().add(mainPanel); 
+
+        JPanel imagePanel = new JPanel(new CustomGridLayout(2, 2, 20, 20));
         imagePanel.setBackground(new Color(94, 69, 128));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(200, 200, 200, 200));
         mainPanel.add(imagePanel, BorderLayout.CENTER);
 
         JPanel answerPanel = new JPanel(new GridLayout(1, 1,20,20));
