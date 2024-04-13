@@ -157,16 +157,16 @@ public class hardlevel10 implements ActionListener {
     textField.setBorder(border); 
 
         textField.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                char inputChar = e.getKeyChar();
-                if (Character.isLetter(inputChar) && textField.getText().length() == 0) {
-                    if (nextField != null) {
-                        nextField.requestFocusInWindow();
-                    }
-                }
+        @Override
+        public void keyTyped(KeyEvent e) {
+            char inputChar = e.getKeyChar();
+            if (Character.isLetter(inputChar)) {
+                textField.setText(String.valueOf(inputChar)); 
+                e.consume(); 
+                moveFocusToNextField(textField); 
             }
-        });
+        }
+    });
 
         textField.addActionListener(new ActionListener() {
             @Override
@@ -177,7 +177,25 @@ public class hardlevel10 implements ActionListener {
 
         return textField;
     }
-
+    
+            private void moveFocusToNextField(JTextField currentField) {
+        if (currentField == answerField1) {
+            answerField2.requestFocusInWindow();
+        } else if (currentField == answerField2) {
+            answerField3.requestFocusInWindow();
+        } else if (currentField == answerField3) {
+            answerField4.requestFocusInWindow();
+        } else if (currentField == answerField4) {
+            answerField5.requestFocusInWindow();
+        } else if (currentField == answerField5) {
+            answerField6.requestFocusInWindow();
+        } else if (currentField == answerField6) {
+            answerField7.requestFocusInWindow();        
+        } else if (currentField == answerField7) {
+            answerField8.requestFocusInWindow();
+            }
+             }
+    
     private void checkAnswers(JFrame gameFrame) {
         String enteredAnswer1 = answerField1.getText().trim().toLowerCase();
         String enteredAnswer2 = answerField2.getText().trim().toLowerCase();
@@ -208,7 +226,9 @@ public class hardlevel10 implements ActionListener {
             JOptionPane.showMessageDialog(gameFrame, "Brilliant!");
             int choice = JOptionPane.showConfirmDialog(gameFrame, "You've conquered all levels! You're a Picture Who master! ", "Congrats", JOptionPane.CLOSED_OPTION);
             if (choice == JOptionPane.CLOSED_OPTION)
-           { gameFrame.dispose();
+           { 
+               timer.stop();
+               gameFrame.dispose();
             openNextLevel();
                  } else {
                 disposeCurrentAndOpenMainMenu();
