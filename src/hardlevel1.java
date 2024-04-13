@@ -172,6 +172,7 @@ public class hardlevel1 implements ActionListener {
         });
 
         return textField;
+}
 
             private void moveFocusToNextField(JTextField currentField) {
         if (currentField == answerField1) {
